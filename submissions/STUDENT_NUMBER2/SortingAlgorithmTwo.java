@@ -3,7 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class SortingAgorithmTwo {
+public class SortingAlgorithmTwo {
     public static void main(String[] args) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(args[0]));
@@ -14,12 +14,9 @@ public class SortingAgorithmTwo {
             // Example sorting operation (using Arrays.sort for simplicity)
             Arrays.sort(numbers);
 
-            // Output the sorted numbers
-            for (int i = 0; i < numbers.length; i++) {
-                System.out.print(numbers[i]);
-                if (i < numbers.length - 1) {
-                    System.out.print(",");
-                }
+            // Output the sorted numbers, each on a new line
+            for (int number : numbers) {
+                System.out.println(number);
             }
         } catch (IOException e) {
             System.err.println("Error reading input file: " + e.getMessage());
