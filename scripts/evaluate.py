@@ -65,7 +65,6 @@ class CompetitionSetup:
         """
         Evaluates all submissions in the submissions directory, compiling and running each.
         """
-        results = []
         for root, dirs, files in os.walk(self.submissions_dir):
             for file in files:
                 if file.endswith(".java"):
@@ -74,10 +73,11 @@ class CompetitionSetup:
                     student_id = os.path.basename(root)
                     directory = os.path.dirname(java_file)
                     if self.compile_java(java_file):
+                        print(f"Running {class_name} for {student_id}")
                         success, execution_time, output = self.run_java(
                             class_name, directory
                         )
-
+                        results = []
                         test_input_file_name = os.path.basename(self.test_input_file)
                         if success:
                             # convert from a string list to a list of numbers
@@ -90,6 +90,7 @@ class CompetitionSetup:
                                     "dataset": test_input_file_name,
                                     "execution_time": execution_time,
                                     "is_sorted": is_sorted,
+                                    "current_time": time.time(),
                                 }
                             )
                         else:
@@ -98,25 +99,40 @@ class CompetitionSetup:
                                     "student_id": student_id,
                                     "algorithm": class_name,
                                     "dataset": test_input_file_name,
+                                    "current_time": time.time(),
                                     "error": output,
                                 }
                             )
-        self.save_results(results)
+                        self.save_results(results)
 
     def save_results(self, results):
         """
         Saves the evaluation results to a JSON file in the results directory.
+        This version appends new entries without updating existing ones and handles empty or malformed JSON files.
         """
         results_file = os.path.join(self.results_dir, "results.json")
-        # Load existing results
-        if os.path.exists(results_file):
-            with open(results_file, "r") as f:
-                existing_results = json.load(f)
-        else:
-            existing_results = []
+        existing_results = []
+
+        # Attempt to load existing results if the file exists and is not empty
+        if os.path.exists(results_file) and os.path.getsize(results_file) > 0:
+            try:
+                with open(results_file, "r") as f:
+                    existing_results = json.load(f)
+                    # Ensure existing_results is a list
+                    if not isinstance(existing_results, list):
+                        print(
+                            "Warning: Existing results.json is not a list. Starting a new list."
+                        )
+                        existing_results = []
+            except json.JSONDecodeError:
+                print(
+                    "Warning: Existing results.json is malformed. Overwriting with new results."
+                )
 
         # Append new results
-        existing_results.extend(results)
+        existing_results += (
+            results  # Use += to append the list of new results to the existing list
+        )
 
         # Write all results back to the file
         with open(results_file, "w") as f:
@@ -147,6 +163,5 @@ if __name__ == "__main__":
     results_dir = os.path.join(competition_root, "results")
     dataset_900000 = os.path.join(competition_root, "datasets", "dataset_900000.txt")
     dataset_9000 = os.path.join(competition_root, "datasets", "dataset_9000.txt")
-    print(os.path.join(competition_root, "datasets", "dataset_900000.txt"))
     CompetitionSetup.run(submission_dir, results_dir, dataset_900000)
     CompetitionSetup.run(submission_dir, results_dir, dataset_9000)
