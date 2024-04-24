@@ -3,7 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class SortingAgorithmTwo {
+public class SortingAlgorithmTwo {
     public static void main(String[] args) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(args[0]));
@@ -12,9 +12,9 @@ public class SortingAgorithmTwo {
             int[] numbers = Arrays.stream(input).mapToInt(Integer::parseInt).toArray();
 
             // Example sorting operation (using Arrays.sort for simplicity)
-            Arrays.sort(numbers);
+            Arrays.parallelSort(numbers);
 
-            // Output the sorted numbers
+            // Output the sorted numbers, each on a new line
             for (int number : numbers) {
                 System.out.println(number);
             }

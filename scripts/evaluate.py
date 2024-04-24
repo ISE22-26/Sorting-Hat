@@ -80,8 +80,8 @@ class CompetitionSetup:
                         results = []
                         test_input_file_name = os.path.basename(self.test_input_file)
                         if success:
-                            # convert from a string list to a list of numbers
-                            list_output = list(map(int, output.split(",")))
+                            # convert from a string list to a list of integers
+                            list_output = [int(x) for x in output.strip().split("\n")]
                             is_sorted = list_output == sorted(list_output)
                             results.append(
                                 {
